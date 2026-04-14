@@ -1,533 +1,524 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>DayFrame</title>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #f5f5f0;
-    color: #1a1a1a;
-    min-height: 100vh;
-    -webkit-tap-highlight-color: transparent;
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  :root{
+    --purple:#534AB7;--purple-light:rgba(83,74,183,0.12);--purple-border:rgba(83,74,183,0.35);
+    --bg:#f5f5f0;--card:#ffffff;--border:rgba(0,0,0,0.12);--border-med:rgba(0,0,0,0.22);
+    --text:#1a1a1a;--text2:#666;--text3:#aaa;
+    --warn-bg:#faeeda;--warn-border:rgba(186,117,23,0.35);--warn-text:#854f0b;
+    --success-bg:#eaf3de;--success-text:#3b6d11;
+    --danger-bg:#fcebeb;--danger-text:#a32d2d;--danger-border:rgba(163,45,45,0.3);
+    --surface:#f0f0ea;--radius:12px;--radius-sm:8px;
   }
-  input, textarea, select {
-    font-family: inherit;
-    font-size: 14px;
-    color: #1a1a1a;
-    background: #ffffff;
-    border: 0.5px solid rgba(0,0,0,0.25);
-    border-radius: 8px;
-    padding: 8px 12px;
-    width: 100%;
-    outline: none;
-    -webkit-appearance: none;
+  @media(prefers-color-scheme:dark){
+    :root{
+      --bg:#111;--card:#1e1e1e;--border:rgba(255,255,255,0.1);--border-med:rgba(255,255,255,0.2);
+      --text:#f0f0ea;--text2:#999;--text3:#555;--surface:#2a2a2a;
+      --warn-bg:rgba(186,117,23,0.15);--warn-text:#e8b050;
+      --success-bg:rgba(59,109,17,0.2);--success-text:#9fd460;
+      --danger-bg:rgba(163,45,45,0.2);--danger-text:#f09595;
+    }
   }
-  input:focus, textarea:focus, select:focus {
-    border-color: #7F77DD;
-    box-shadow: 0 0 0 2px rgba(127,119,221,0.15);
-  }
-  button {
-    font-family: inherit;
-    cursor: pointer;
-    border: 0.5px solid rgba(0,0,0,0.25);
-    border-radius: 8px;
-    padding: 7px 14px;
-    font-size: 13px;
-    background: #ffffff;
-    color: #1a1a1a;
-    transition: background 0.15s, transform 0.1s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  button:hover { background: #f0f0ea; }
-  button:active { transform: scale(0.98); }
-  button:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn-primary { background: #534AB7; color: #fff; border-color: #534AB7; }
-  .btn-primary:hover { background: #3C3489; }
-  .btn-danger { background: #fcebeb; color: #a32d2d; border-color: rgba(163,45,45,0.3); }
-  .btn-sm { padding: 4px 10px; font-size: 12px; }
-
-  @media (prefers-color-scheme: dark) {
-    body { background: #1a1a1a; color: #f0f0ea; }
-    input, textarea, select { background: #2a2a2a; color: #f0f0ea; border-color: rgba(255,255,255,0.2); }
-    button { background: #2a2a2a; color: #f0f0ea; border-color: rgba(255,255,255,0.2); }
-    button:hover { background: #333; }
-    .btn-primary { background: #534AB7; color: #fff; border-color: #534AB7; }
-    .btn-primary:hover { background: #3C3489; }
-    .btn-danger { background: rgba(163,45,45,0.2); color: #f09595; border-color: rgba(163,45,45,0.4); }
-  }
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
+  #app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+  #header{background:var(--purple);padding:16px 18px 0;position:sticky;top:0;z-index:50}
+  #header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  #app-title{font-size:20px;font-weight:500;color:#fff;letter-spacing:-0.3px}
+  #app-date{font-size:12px;color:rgba(255,255,255,0.6);margin-top:2px}
+  #end-day-btn{background:rgba(255,255,255,0.15);border:0.5px solid rgba(255,255,255,0.3);color:#fff;font-size:12px;padding:6px 14px;border-radius:var(--radius-sm);cursor:pointer;font-family:inherit}
+  #tabs{display:flex}
+  .tab-btn{flex:1;background:none;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.5);border-radius:0;font-weight:400;padding:8px 0 12px;font-size:14px;cursor:pointer;font-family:inherit;transition:color 0.15s}
+  .tab-btn.active{border-bottom-color:#fff;color:#fff;font-weight:500}
+  #main{flex:1;padding:18px 16px 100px}
+  .card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px 16px}
+  .surface{background:var(--surface);border-radius:var(--radius-sm);padding:10px 14px}
+  .label{font-size:11px;color:var(--text2);font-weight:500;text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:5px}
+  input,textarea,select{font-family:inherit;font-size:14px;color:var(--text);background:var(--card);border:0.5px solid var(--border-med);border-radius:var(--radius-sm);padding:9px 12px;width:100%;outline:none;-webkit-appearance:none;appearance:none}
+  input:focus,textarea:focus{border-color:var(--purple);box-shadow:0 0 0 2px var(--purple-light)}
+  textarea{resize:vertical}
+  input[type=checkbox]{width:auto;margin:0}
+  button{font-family:inherit;cursor:pointer;border:0.5px solid var(--border-med);border-radius:var(--radius-sm);padding:8px 14px;font-size:13px;background:var(--card);color:var(--text);transition:background 0.15s}
+  button:active{opacity:0.8}
+  button:disabled{opacity:0.35;cursor:not-allowed}
+  .btn-primary{background:var(--purple);color:#fff;border-color:var(--purple)}
+  .btn-danger{background:var(--danger-bg);color:var(--danger-text);border-color:var(--danger-border)}
+  .btn-sm{padding:5px 11px;font-size:12px}
+  .btn-full{width:100%;padding:12px;font-size:15px}
+  .alert-warn{background:var(--warn-bg);border:0.5px solid var(--warn-border);border-radius:var(--radius-sm);padding:9px 14px;font-size:13px;color:var(--warn-text);margin-bottom:14px}
+  .entry-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:9px;transition:opacity 0.15s,border-color 0.15s}
+  .entry-card.checked{opacity:0.55;border-color:var(--purple-border)}
+  .entry-row{display:flex;align-items:center;gap:12px}
+  .check-box{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--border-med);background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s}
+  .check-box.checked{background:var(--purple);border-color:var(--purple)}
+  .entry-desc{font-size:14px;font-weight:500}
+  .entry-desc.checked{text-decoration:line-through;color:var(--text2)}
+  .entry-time{font-size:12px;color:var(--text3);margin-top:1px}
+  .log-btn{font-size:11px;padding:5px 11px;background:var(--purple-light);border:0.5px solid var(--purple-border);color:var(--purple);flex-shrink:0;border-radius:var(--radius-sm);cursor:pointer;font-family:inherit}
+  .last-entry{margin-top:9px;padding:7px 10px;background:var(--purple-light);border-radius:7px;font-size:12px;color:var(--text2)}
+  .tpl-option{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);padding:13px 16px;cursor:pointer;margin-bottom:10px;transition:border-color 0.15s}
+  .tpl-option.selected{border-color:var(--purple)}
+  .check-circle{width:20px;height:20px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .entry-builder{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px 13px;margin-bottom:10px}
+  .add-entry-btn{border:1px dashed var(--border-med);border-radius:var(--radius);padding:11px;font-size:13px;color:var(--text2);background:transparent;width:100%;cursor:pointer;font-family:inherit;margin-bottom:14px}
+  .pill{font-size:10px;background:var(--purple-light);color:var(--purple);padding:2px 7px;border-radius:100px;font-weight:500;flex-shrink:0}
+  .log-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .log-tab{font-size:13px;padding:7px 14px;background:transparent;border:0.5px solid var(--border);color:var(--text2);text-transform:capitalize;border-radius:var(--radius-sm);cursor:pointer;font-family:inherit}
+  .log-tab.active{background:var(--purple-light);border-color:var(--purple-border);color:var(--purple)}
+  #modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:center;justify-content:center;padding:20px}
+  #modal-overlay.open{display:flex}
+  #modal-box{background:var(--card);border-radius:14px;padding:22px;max-width:360px;width:100%}
+  .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  .empty{font-size:14px;color:var(--text2);text-align:center;padding:40px 0}
+  .pct-badge{font-size:12px;padding:3px 9px;border-radius:100px;font-weight:500}
+  .hist-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin-bottom:10px}
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
-const { useState, useEffect } = React;
-
-const STORAGE_KEYS = { templates: 'df_templates', dailyLog: 'df_daily', history: 'df_history', tracked: 'df_tracked' };
-const load = k => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch { return null; } };
-const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
-const uid = () => Math.random().toString(36).slice(2, 9);
-const todayStr = () => new Date().toISOString().slice(0, 10);
-const fmtDate = d => new Date(d + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-
-const cs = {
-  card: { background: '#ffffff', border: '0.5px solid rgba(0,0,0,0.12)', borderRadius: 12, padding: '12px 16px' },
-  surface: { background: '#f0f0ea', borderRadius: 8, padding: '10px 14px' },
-  label: { fontSize: 11, color: '#888', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 5 },
-};
-
-const DEFAULT_TEMPLATES = [
-  { id: 'tpl_weekday', name: 'Weekday', entries: [
-    { id: uid(), time: '7:00 AM', desc: 'Wake up & morning routine', tracked: false, trackTable: '' },
-    { id: uid(), time: '8:00 AM', desc: 'Breakfast', tracked: false, trackTable: '' },
-    { id: uid(), time: '9:00 AM', desc: 'Commute', tracked: false, trackTable: '' },
-    { id: uid(), time: '12:00 PM', desc: 'Lunch', tracked: false, trackTable: '' },
-    { id: uid(), time: '6:00 PM', desc: 'Workout', tracked: true, trackTable: 'Workouts' },
-    { id: uid(), time: '7:30 PM', desc: 'Dinner', tracked: false, trackTable: '' },
-    { id: uid(), time: '9:00 PM', desc: 'Wind down', tracked: false, trackTable: '' },
-  ]},
-  { id: 'tpl_weekend', name: 'Weekend', entries: [
-    { id: uid(), time: '8:30 AM', desc: 'Wake up slow', tracked: false, trackTable: '' },
-    { id: uid(), time: '10:00 AM', desc: 'Workout', tracked: true, trackTable: 'Workouts' },
-    { id: uid(), time: '12:00 PM', desc: 'Brunch', tracked: false, trackTable: '' },
-    { id: uid(), time: '3:00 PM', desc: 'Errands / chores', tracked: false, trackTable: '' },
-    { id: uid(), time: '7:00 PM', desc: 'Dinner', tracked: false, trackTable: '' },
-  ]}
-];
-
-function App() {
-  const [templates, setTemplates] = useState(() => load(STORAGE_KEYS.templates) || DEFAULT_TEMPLATES);
-  const [dailyLog, setDailyLog] = useState(() => load(STORAGE_KEYS.dailyLog) || null);
-  const [history, setHistory] = useState(() => load(STORAGE_KEYS.history) || []);
-  const [tracked, setTracked] = useState(() => load(STORAGE_KEYS.tracked) || {});
-  const [tab, setTab] = useState('today');
-  const [modal, setModal] = useState(null);
-
-  useEffect(() => { save(STORAGE_KEYS.templates, templates); }, [templates]);
-  useEffect(() => { save(STORAGE_KEYS.dailyLog, dailyLog); }, [dailyLog]);
-  useEffect(() => { save(STORAGE_KEYS.history, history); }, [history]);
-  useEffect(() => { save(STORAGE_KEYS.tracked, tracked); }, [tracked]);
-
-  const startDay = (templateId, goal, freeTime) => {
-    const tpl = templates.find(t => t.id === templateId);
-    if (!tpl) return;
-    setDailyLog({ date: todayStr(), templateId, templateName: tpl.name, goal, freeTime, checks: {}, createdAt: Date.now() });
-  };
-
-  const endDay = () => {
-    if (dailyLog) { setHistory(h => [dailyLog, ...h].slice(0, 90)); setDailyLog(null); }
-  };
-
-  const toggleCheck = (entryId) => setDailyLog(d => ({ ...d, checks: { ...d.checks, [entryId]: !d.checks[entryId] } }));
-
-  const addTrackedEntry = (table, entryDesc, note) => {
-    const key = table.trim().toLowerCase().replace(/\s+/g, '_');
-    const entry = { id: uid(), date: todayStr(), desc: entryDesc, note, ts: Date.now() };
-    setTracked(t => ({ ...t, [key]: [entry, ...(t[key] || [])].slice(0, 200) }));
-  };
-
-  const currentTemplate = dailyLog ? templates.find(t => t.id === dailyLog.templateId) : null;
-
-  return (
-    <div style={{ maxWidth: 480, margin: '0 auto', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <header style={{ background: '#534AB7', padding: '16px 20px 0', position: 'sticky', top: 0, zIndex: 10 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 500, color: '#fff', letterSpacing: '-0.3px' }}>DayFrame</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 1 }}>{fmtDate(todayStr())}</div>
-          </div>
-          {dailyLog && (
-            <button onClick={endDay} style={{ background: 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.3)', color: '#fff', fontSize: 12, padding: '6px 14px' }}>
-              End day
-            </button>
-          )}
-        </div>
-        <div style={{ display: 'flex' }}>
-          {['today','templates','logs'].map(t => (
-            <button key={t} onClick={() => setTab(t)} style={{ flex: 1, background: 'none', border: 'none', borderBottom: tab === t ? '2px solid #fff' : '2px solid transparent', color: tab === t ? '#fff' : 'rgba(255,255,255,0.5)', borderRadius: 0, fontWeight: tab === t ? 500 : 400, padding: '7px 0 12px', fontSize: 14, textTransform: 'capitalize', transition: 'color 0.15s' }}>
-              {t === 'today' ? 'Today' : t === 'templates' ? 'Templates' : 'Logs'}
-            </button>
-          ))}
-        </div>
-      </header>
-
-      <main style={{ flex: 1, padding: '18px 16px 100px' }}>
-        {tab === 'today' && <TodayTab dailyLog={dailyLog} templates={templates} currentTemplate={currentTemplate} tracked={tracked} onStartDay={startDay} onToggle={toggleCheck} onAddTracked={addTrackedEntry} setModal={setModal} />}
-        {tab === 'templates' && <TemplatesTab templates={templates} setTemplates={setTemplates} setModal={setModal} />}
-        {tab === 'logs' && <LogsTab history={history} tracked={tracked} templates={templates} />}
-      </main>
-
-      {modal && <Modal modal={modal} onClose={() => setModal(null)} onConfirm={(data) => { modal.onConfirm && modal.onConfirm(data); setModal(null); }} />}
+<div id="app">
+  <header id="header">
+    <div id="header-top">
+      <div>
+        <div id="app-title">DayFrame</div>
+        <div id="app-date"></div>
+      </div>
+      <button id="end-day-btn" style="display:none" onclick="endDay()">End day</button>
     </div>
-  );
+    <div id="tabs">
+      <button class="tab-btn active" onclick="switchTab('today')">Today</button>
+      <button class="tab-btn" onclick="switchTab('templates')">Templates</button>
+      <button class="tab-btn" onclick="switchTab('logs')">Logs</button>
+    </div>
+  </header>
+  <main id="main"></main>
+</div>
+<div id="modal-overlay" onclick="closeModalOnBg(event)">
+  <div id="modal-box"></div>
+</div>
+
+<script>
+// Storage
+const KEYS={tpl:'df_templates',log:'df_daily',hist:'df_history',tracked:'df_tracked'};
+const load=k=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch{return null}};
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){alert('Storage error: '+e.message)}};
+const uid=()=>Math.random().toString(36).slice(2,9);
+const todayStr=()=>new Date().toISOString().slice(0,10);
+const fmtDate=d=>new Date(d+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+const esc=s=>s==null?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const tableKey=t=>(t||'').trim().toLowerCase().replace(/\s+/g,'_');
+
+// State
+let templates=load(KEYS.tpl)||defaultTemplates();
+let dailyLog=load(KEYS.log)||null;
+let history=load(KEYS.hist)||[];
+let tracked=load(KEYS.tracked)||{};
+let activeTab='today';
+let editingTplId=null;
+let editorEntries=[];
+let activeLogTab='history';
+let startStep=1,startSelTpl='',startGoal='',startFreeTime='',startWarned=false;
+let confirmCb=null;
+
+function defaultTemplates(){
+  return[
+    {id:'tpl_weekday',name:'Weekday',entries:[
+      {id:uid(),time:'7:00 AM',desc:'Wake up & morning routine',tracked:false,trackTable:''},
+      {id:uid(),time:'8:00 AM',desc:'Breakfast',tracked:false,trackTable:''},
+      {id:uid(),time:'9:00 AM',desc:'Commute',tracked:false,trackTable:''},
+      {id:uid(),time:'12:00 PM',desc:'Lunch',tracked:false,trackTable:''},
+      {id:uid(),time:'6:00 PM',desc:'Workout',tracked:true,trackTable:'Workouts'},
+      {id:uid(),time:'7:30 PM',desc:'Dinner',tracked:false,trackTable:''},
+      {id:uid(),time:'9:00 PM',desc:'Wind down',tracked:false,trackTable:''},
+    ]},
+    {id:'tpl_weekend',name:'Weekend',entries:[
+      {id:uid(),time:'8:30 AM',desc:'Wake up slow',tracked:false,trackTable:''},
+      {id:uid(),time:'10:00 AM',desc:'Workout',tracked:true,trackTable:'Workouts'},
+      {id:uid(),time:'12:00 PM',desc:'Brunch',tracked:false,trackTable:''},
+      {id:uid(),time:'3:00 PM',desc:'Errands / chores',tracked:false,trackTable:''},
+      {id:uid(),time:'7:00 PM',desc:'Dinner',tracked:false,trackTable:''},
+    ]}
+  ];
 }
 
-function TodayTab({ dailyLog, templates, currentTemplate, tracked, onStartDay, onToggle, onAddTracked, setModal }) {
-  if (!dailyLog) return <StartDayView templates={templates} onStartDay={onStartDay} />;
+if(!startSelTpl&&templates.length>0) startSelTpl=templates[0].id;
 
-  const entries = currentTemplate ? currentTemplate.entries : [];
-  const done = entries.filter(e => dailyLog.checks[e.id]).length;
+const CHECK_SVG=`<svg width="11" height="8" viewBox="0 0 11 8" fill="none"><path d="M1 4L4 7L10 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const CIRCLE_CHECK=`<div class="check-circle">${CHECK_SVG}</div>`;
 
-  const getLastTracked = (table) => {
-    const key = table.trim().toLowerCase().replace(/\s+/g, '_');
-    const rows = tracked[key];
-    return (rows && rows.length > 0) ? rows[0] : null;
-  };
-
-  return (
-    <div>
-      <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
-        {[['Template', dailyLog.templateName], ['Progress', `${done}/${entries.length}`]].map(([label, val]) => (
-          <div key={label} style={{ ...cs.surface, flex: 1 }}>
-            <div style={cs.label}>{label}</div>
-            <div style={{ fontSize: 16, fontWeight: 500 }}>{val}</div>
-          </div>
-        ))}
-      </div>
-
-      {(!dailyLog.goal || !dailyLog.freeTime) && (
-        <div style={{ background: '#faeeda', border: '0.5px solid rgba(186,117,23,0.35)', borderRadius: 8, padding: '9px 14px', marginBottom: 14, fontSize: 13, color: '#854f0b' }}>
-          ⚠ {!dailyLog.goal && !dailyLog.freeTime ? 'Daily goal and free-time activity not set.' : !dailyLog.goal ? 'Daily goal not set.' : 'Free-time activity not set.'}
-        </div>
-      )}
-
-      {(dailyLog.goal || dailyLog.freeTime) && (
-        <div style={{ ...cs.card, marginBottom: 16 }}>
-          {dailyLog.goal && <div style={{ marginBottom: dailyLog.freeTime ? 10 : 0 }}><span style={cs.label}>Daily goal</span><div style={{ fontSize: 14 }}>{dailyLog.goal}</div></div>}
-          {dailyLog.freeTime && <div><span style={cs.label}>Free time</span><div style={{ fontSize: 14 }}>{dailyLog.freeTime}</div></div>}
-        </div>
-      )}
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-        {entries.map(entry => {
-          const checked = !!dailyLog.checks[entry.id];
-          const last = entry.tracked ? getLastTracked(entry.trackTable) : null;
-          return (
-            <div key={entry.id} style={{ ...cs.card, borderColor: checked ? 'rgba(127,119,221,0.4)' : 'rgba(0,0,0,0.12)', opacity: checked ? 0.6 : 1, transition: 'all 0.15s', padding: '12px 14px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div onClick={() => onToggle(entry.id)} style={{ width: 22, height: 22, borderRadius: 6, border: `1.5px solid ${checked ? '#534AB7' : 'rgba(0,0,0,0.25)'}`, background: checked ? '#534AB7' : 'transparent', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
-                  {checked && <svg width="11" height="8" viewBox="0 0 11 8" fill="none"><path d="M1 4L4 7L10 1" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 14, fontWeight: 500, textDecoration: checked ? 'line-through' : 'none', color: checked ? '#888' : '#1a1a1a' }}>{entry.desc}</div>
-                  <div style={{ fontSize: 12, color: '#aaa', marginTop: 1 }}>{entry.time}</div>
-                </div>
-                {entry.tracked && (
-                  <button onClick={() => setModal({ type: 'track', entry, last, onConfirm: (note) => onAddTracked(entry.trackTable, entry.desc, note) })} style={{ fontSize: 11, padding: '5px 11px', background: 'rgba(127,119,221,0.1)', border: '0.5px solid rgba(127,119,221,0.35)', color: '#534AB7', flexShrink: 0 }}>
-                    Log
-                  </button>
-                )}
-              </div>
-              {entry.tracked && last && (
-                <div style={{ marginTop: 9, padding: '7px 10px', background: 'rgba(127,119,221,0.07)', borderRadius: 7, fontSize: 12, color: '#666' }}>
-                  <span style={{ fontWeight: 500, color: '#534AB7' }}>Last:</span> {last.note} <span style={{ color: '#aaa' }}>({fmtDate(last.date)})</span>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+function switchTab(tab){
+  activeTab=tab;editingTplId=null;editorEntries=[];
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['today','templates','logs'][i]===tab));
+  render();
 }
 
-function StartDayView({ templates, onStartDay }) {
-  const [step, setStep] = useState(1);
-  const [selectedTpl, setSelectedTpl] = useState(templates[0]?.id || '');
-  const [goal, setGoal] = useState('');
-  const [freeTime, setFreeTime] = useState('');
-  const [warned, setWarned] = useState(false);
-
-  const handleStart = () => {
-    if (!warned && (!goal.trim() || !freeTime.trim())) { setWarned(true); return; }
-    onStartDay(selectedTpl, goal.trim(), freeTime.trim());
-  };
-
-  if (step === 1) return (
-    <div>
-      <div style={{ fontSize: 17, fontWeight: 500, marginBottom: 4 }}>Choose today's template</div>
-      <div style={{ fontSize: 13, color: '#888', marginBottom: 18 }}>Pick the schedule that best fits your day.</div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
-        {templates.map(t => (
-          <div key={t.id} onClick={() => setSelectedTpl(t.id)} style={{ ...cs.card, border: `1.5px solid ${selectedTpl === t.id ? '#534AB7' : 'rgba(0,0,0,0.12)'}`, cursor: 'pointer', transition: 'all 0.15s' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <div style={{ fontWeight: 500, fontSize: 15 }}>{t.name}</div>
-                <div style={{ fontSize: 12, color: '#888', marginTop: 3 }}>{t.entries.length} entries · {t.entries[0]?.time} – {t.entries[t.entries.length - 1]?.time}</div>
-              </div>
-              {selectedTpl === t.id && (
-                <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#534AB7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <svg width="10" height="7" viewBox="0 0 10 7" fill="none"><path d="M1 3.5L3.5 6L9 1" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-        {templates.length === 0 && <div style={{ fontSize: 14, color: '#888', textAlign: 'center', padding: 24 }}>No templates yet. Go to Templates tab to create one.</div>}
-      </div>
-      <button className="btn-primary" style={{ width: '100%', padding: 12, fontSize: 15 }} onClick={() => setStep(2)} disabled={!selectedTpl}>
-        Next: Set daily intentions →
-      </button>
-    </div>
-  );
-
-  return (
-    <div>
-      <div style={{ fontSize: 17, fontWeight: 500, marginBottom: 4 }}>Set your intentions</div>
-      <div style={{ fontSize: 13, color: '#888', marginBottom: 20 }}>These guide your day. You can leave them blank but you'll be reminded.</div>
-
-      {warned && (!goal.trim() || !freeTime.trim()) && (
-        <div style={{ background: '#faeeda', border: '0.5px solid rgba(186,117,23,0.35)', borderRadius: 8, padding: '10px 14px', marginBottom: 16, fontSize: 13, color: '#854f0b' }}>
-          <div style={{ fontWeight: 500, marginBottom: 4 }}>⚠ Reminder — don't skip these!</div>
-          {!goal.trim() && <div>• Daily goal is empty</div>}
-          {!freeTime.trim() && <div>• Free-time activity is empty</div>}
-          <div style={{ marginTop: 6, fontSize: 12, color: '#a06010' }}>Tap "Start Day" again to proceed anyway.</div>
-        </div>
-      )}
-
-      <div style={{ marginBottom: 14 }}>
-        <label style={cs.label}>Daily goal</label>
-        <input value={goal} onChange={e => setGoal(e.target.value)} placeholder="e.g. Finish the project proposal..." />
-      </div>
-      <div style={{ marginBottom: 22 }}>
-        <label style={cs.label}>Free-time activity</label>
-        <input value={freeTime} onChange={e => setFreeTime(e.target.value)} placeholder="e.g. Read for 30 minutes..." />
-      </div>
-      <div style={{ display: 'flex', gap: 10 }}>
-        <button onClick={() => setStep(1)} style={{ padding: '10px 16px' }}>← Back</button>
-        <button className="btn-primary" style={{ flex: 1, padding: 12, fontSize: 15 }} onClick={handleStart}>Start Day</button>
-      </div>
-    </div>
-  );
+function render(){
+  document.getElementById('app-date').textContent=fmtDate(todayStr());
+  document.getElementById('end-day-btn').style.display=dailyLog?'block':'none';
+  const main=document.getElementById('main');
+  if(activeTab==='today') main.innerHTML=dailyLog?rToday():rStartDay();
+  else if(activeTab==='templates') main.innerHTML=editingTplId?rEditor():rTemplates();
+  else main.innerHTML=rLogs();
 }
 
-function TemplatesTab({ templates, setTemplates, setModal }) {
-  const [editing, setEditing] = useState(null);
-
-  const addTemplate = () => {
-    const t = { id: uid(), name: 'New Template', entries: [] };
-    setTemplates(ts => [...ts, t]);
-    setEditing(t.id);
-  };
-
-  const deleteTemplate = (id) => {
-    setModal({ type: 'confirm', message: 'Delete this template? This cannot be undone.', onConfirm: () => setTemplates(ts => ts.filter(t => t.id !== id)) });
-  };
-
-  if (editing) {
-    const tpl = templates.find(t => t.id === editing);
-    if (!tpl) { setEditing(null); return null; }
-    return <TemplateEditor tpl={tpl} onSave={(updated) => { setTemplates(ts => ts.map(t => t.id === updated.id ? updated : t)); setEditing(null); }} onBack={() => setEditing(null)} />;
+// ── TODAY ──────────────────────────────────────────────────────────────────
+function rToday(){
+  const tpl=templates.find(t=>t.id===dailyLog.templateId);
+  const entries=tpl?tpl.entries:[];
+  const done=entries.filter(e=>dailyLog.checks[e.id]).length;
+  const mg=!dailyLog.goal,mf=!dailyLog.freeTime;
+  let h=`<div style="display:flex;gap:10px;margin-bottom:16px">
+    <div class="surface" style="flex:1"><span class="label">Template</span><div style="font-size:16px;font-weight:500">${esc(dailyLog.templateName)}</div></div>
+    <div class="surface" style="flex:1"><span class="label">Progress</span><div style="font-size:16px;font-weight:500" id="prog-display">${done}/${entries.length}</div></div>
+  </div>`;
+  if(mg||mf) h+=`<div class="alert-warn">⚠ ${mg&&mf?'Daily goal and free-time activity not set.':mg?'Daily goal not set.':'Free-time activity not set.'}</div>`;
+  if(dailyLog.goal||dailyLog.freeTime){
+    h+=`<div class="card" style="margin-bottom:16px">`;
+    if(dailyLog.goal) h+=`<div style="margin-bottom:${dailyLog.freeTime?'10px':'0'}"><span class="label">Daily goal</span><div style="font-size:14px">${esc(dailyLog.goal)}</div></div>`;
+    if(dailyLog.freeTime) h+=`<div><span class="label">Free time</span><div style="font-size:14px">${esc(dailyLog.freeTime)}</div></div>`;
+    h+=`</div>`;
   }
-
-  return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <div style={{ fontSize: 17, fontWeight: 500 }}>Your templates</div>
-        <button className="btn-primary btn-sm" onClick={addTemplate} style={{ padding: '7px 14px' }}>+ New</button>
+  entries.forEach(entry=>{
+    const checked=!!dailyLog.checks[entry.id];
+    const last=entry.tracked?getLastTracked(entry.trackTable):null;
+    h+=`<div class="entry-card${checked?' checked':''}" id="ec-${entry.id}">
+      <div class="entry-row">
+        <div class="check-box${checked?' checked':''}" onclick="toggleCheck('${entry.id}')">${checked?CHECK_SVG:''}</div>
+        <div style="flex:1;min-width:0">
+          <div class="entry-desc${checked?' checked':''}">${esc(entry.desc)}</div>
+          <div class="entry-time">${esc(entry.time)}</div>
+        </div>
+        ${entry.tracked?`<button class="log-btn" onclick="openTrackModal('${entry.id}')">Log</button>`:''}
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {templates.map(t => (
-          <div key={t.id} style={cs.card}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-              <div>
-                <div style={{ fontWeight: 500, fontSize: 15 }}>{t.name}</div>
-                <div style={{ fontSize: 12, color: '#888', marginTop: 2 }}>{t.entries.length} entries</div>
-              </div>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <button className="btn-sm" onClick={() => setEditing(t.id)}>Edit</button>
-                <button className="btn-sm btn-danger" onClick={() => deleteTemplate(t.id)}>Delete</button>
-              </div>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              {t.entries.slice(0, 5).map(e => (
-                <div key={e.id} style={{ display: 'flex', gap: 10, fontSize: 13, color: '#666', alignItems: 'center' }}>
-                  <span style={{ minWidth: 65, color: '#aaa', fontSize: 12 }}>{e.time}</span>
-                  <span style={{ flex: 1 }}>{e.desc}</span>
-                  {e.tracked && <span style={{ fontSize: 10, background: 'rgba(127,119,221,0.12)', color: '#534AB7', padding: '2px 7px', borderRadius: 100, fontWeight: 500, flexShrink: 0 }}>{e.trackTable}</span>}
-                </div>
-              ))}
-              {t.entries.length > 5 && <div style={{ fontSize: 12, color: '#aaa' }}>+{t.entries.length - 5} more entries</div>}
-            </div>
-          </div>
-        ))}
-        {templates.length === 0 && <div style={{ fontSize: 14, color: '#888', textAlign: 'center', padding: 40 }}>No templates yet. Tap "+ New" to create one.</div>}
-      </div>
-    </div>
-  );
+      ${last?`<div class="last-entry"><strong style="color:var(--purple)">Last:</strong> ${esc(last.note||'(no notes)')} <span style="color:var(--text3)">(${fmtDate(last.date)})</span></div>`:''}
+    </div>`;
+  });
+  if(!entries.length) h+=`<div class="empty">This template has no entries.</div>`;
+  return h;
 }
 
-function TemplateEditor({ tpl, onSave, onBack }) {
-  const [name, setName] = useState(tpl.name);
-  const [entries, setEntries] = useState(tpl.entries.map(e => ({ ...e })));
-
-  const addEntry = () => setEntries(es => [...es, { id: uid(), time: '', desc: '', tracked: false, trackTable: '' }]);
-  const removeEntry = (id) => setEntries(es => es.filter(e => e.id !== id));
-  const updateEntry = (id, field, value) => setEntries(es => es.map(e => e.id === id ? { ...e, [field]: value } : e));
-  const moveEntry = (idx, dir) => {
-    const copy = [...entries];
-    const target = idx + dir;
-    if (target < 0 || target >= copy.length) return;
-    [copy[idx], copy[target]] = [copy[target], copy[idx]];
-    setEntries(copy);
-  };
-
-  return (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-        <button onClick={onBack} style={{ padding: '7px 12px', fontSize: 13 }}>← Back</button>
-        <div style={{ fontSize: 17, fontWeight: 500 }}>Edit template</div>
-      </div>
-
-      <div style={{ marginBottom: 18 }}>
-        <label style={cs.label}>Template name</label>
-        <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Weekday, Weekend, Rest Day..." />
-      </div>
-
-      <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 10 }}>Schedule entries</div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 14 }}>
-        {entries.map((entry, idx) => (
-          <div key={entry.id} style={{ ...cs.card, padding: '12px 13px' }}>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-              <div style={{ flex: '0 0 95px' }}>
-                <label style={{ ...cs.label, marginBottom: 4 }}>Time</label>
-                <input value={entry.time} onChange={e => updateEntry(entry.id, 'time', e.target.value)} placeholder="9:00 AM" style={{ padding: '7px 10px' }} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label style={{ ...cs.label, marginBottom: 4 }}>Description</label>
-                <input value={entry.desc} onChange={e => updateEntry(entry.id, 'desc', e.target.value)} placeholder="Activity..." style={{ padding: '7px 10px' }} />
-              </div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, cursor: 'pointer', flexShrink: 0 }}>
-                <input type="checkbox" checked={entry.tracked} onChange={e => updateEntry(entry.id, 'tracked', e.target.checked)} style={{ width: 'auto', margin: 0 }} />
-                Track this
-              </label>
-              {entry.tracked && (
-                <input value={entry.trackTable} onChange={e => updateEntry(entry.id, 'trackTable', e.target.value)} placeholder="Table name (e.g. Workouts)" style={{ flex: 1, minWidth: 130, padding: '5px 10px', fontSize: 12 }} />
-              )}
-              <div style={{ marginLeft: 'auto', display: 'flex', gap: 5 }}>
-                <button className="btn-sm" onClick={() => moveEntry(idx, -1)} disabled={idx === 0} style={{ padding: '4px 9px' }}>↑</button>
-                <button className="btn-sm" onClick={() => moveEntry(idx, 1)} disabled={idx === entries.length - 1} style={{ padding: '4px 9px' }}>↓</button>
-                <button className="btn-sm btn-danger" onClick={() => removeEntry(entry.id)} style={{ padding: '4px 9px' }}>✕</button>
-              </div>
-            </div>
-          </div>
-        ))}
-        <button onClick={addEntry} style={{ border: '1px dashed rgba(0,0,0,0.2)', borderRadius: 12, padding: 12, fontSize: 13, color: '#888', background: 'transparent' }}>
-          + Add entry
-        </button>
-      </div>
-      <button className="btn-primary" style={{ width: '100%', padding: 12, fontSize: 15 }} onClick={() => onSave({ ...tpl, name, entries })}>
-        Save template
-      </button>
-    </div>
-  );
+function getLastTracked(table){
+  const rows=tracked[tableKey(table)];
+  return rows&&rows.length?rows[0]:null;
 }
 
-function LogsTab({ history, tracked, templates }) {
-  const [view, setView] = useState('history');
-  const tables = Object.keys(tracked);
-
-  return (
-    <div>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 18, flexWrap: 'wrap' }}>
-        {['history', ...tables].map(t => (
-          <button key={t} onClick={() => setView(t)} style={{ fontSize: 13, padding: '7px 14px', background: view === t ? 'rgba(127,119,221,0.12)' : 'transparent', border: '0.5px solid ' + (view === t ? 'rgba(127,119,221,0.4)' : 'rgba(0,0,0,0.15)'), color: view === t ? '#534AB7' : '#888', textTransform: 'capitalize' }}>
-            {t === 'history' ? 'Day history' : t.replace(/_/g, ' ')}
-          </button>
-        ))}
-      </div>
-
-      {view === 'history' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {history.length === 0 && <div style={{ fontSize: 14, color: '#888', textAlign: 'center', padding: 40 }}>No history yet. Complete your first day!</div>}
-          {history.map((d, i) => {
-            const tpl = templates.find(t => t.id === d.templateId);
-            const ents = tpl ? tpl.entries : [];
-            const done = ents.filter(e => d.checks[e.id]).length;
-            const pct = ents.length ? Math.round((done / ents.length) * 100) : 0;
-            return (
-              <div key={i} style={cs.card}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                  <div style={{ fontWeight: 500, fontSize: 15 }}>{fmtDate(d.date)}</div>
-                  <div style={{ fontSize: 12, background: pct === 100 ? '#eaf3de' : '#f0f0ea', color: pct === 100 ? '#3b6d11' : '#666', padding: '3px 9px', borderRadius: 100, fontWeight: 500 }}>{pct}%</div>
-                </div>
-                <div style={{ fontSize: 13, color: '#888', marginBottom: d.goal || d.freeTime ? 7 : 0 }}>{d.templateName} · {done}/{ents.length} items complete</div>
-                {d.goal && <div style={{ fontSize: 13, color: '#666' }}>Goal: <span style={{ color: '#1a1a1a' }}>{d.goal}</span></div>}
-                {d.freeTime && <div style={{ fontSize: 13, color: '#666', marginTop: 2 }}>Free time: <span style={{ color: '#1a1a1a' }}>{d.freeTime}</span></div>}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {view !== 'history' && tracked[view] && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ fontSize: 13, color: '#888', marginBottom: 4, textTransform: 'capitalize' }}>{view.replace(/_/g, ' ')} — {tracked[view].length} entries</div>
-          {tracked[view].map(e => (
-            <div key={e.id} style={cs.card}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                <div style={{ fontWeight: 500, fontSize: 14 }}>{fmtDate(e.date)}</div>
-                <div style={{ fontSize: 12, color: '#aaa' }}>{e.desc}</div>
-              </div>
-              <div style={{ fontSize: 14, color: '#444', lineHeight: 1.5 }}>{e.note || <span style={{ color: '#bbb', fontStyle: 'italic' }}>No notes</span>}</div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+function toggleCheck(id){
+  if(!dailyLog)return;
+  dailyLog.checks[id]=!dailyLog.checks[id];
+  save(KEYS.log,dailyLog);
+  const tpl=templates.find(t=>t.id===dailyLog.templateId);
+  const entries=tpl?tpl.entries:[];
+  const checked=dailyLog.checks[id];
+  const card=document.getElementById('ec-'+id);
+  if(card){
+    card.className='entry-card'+(checked?' checked':'');
+    const cb=card.querySelector('.check-box');
+    cb.className='check-box'+(checked?' checked':'');
+    cb.innerHTML=checked?CHECK_SVG:'';
+    const desc=card.querySelector('.entry-desc');
+    desc.className='entry-desc'+(checked?' checked':'');
+  }
+  const done=entries.filter(e=>dailyLog.checks[e.id]).length;
+  const prog=document.getElementById('prog-display');
+  if(prog) prog.textContent=done+'/'+entries.length;
 }
 
-function Modal({ modal, onClose, onConfirm }) {
-  const [note, setNote] = useState('');
+// ── START DAY ──────────────────────────────────────────────────────────────
+function rStartDay(){return startStep===1?rStep1():rStep2();}
 
-  const overlayStyle = { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, zIndex: 100 };
-  const boxStyle = { background: '#fff', borderRadius: 14, padding: 22, maxWidth: 360, width: '100%' };
-
-  if (modal.type === 'confirm') return (
-    <div style={overlayStyle}>
-      <div style={boxStyle}>
-        <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 6 }}>Confirm</div>
-        <div style={{ fontSize: 14, color: '#666', marginBottom: 20, lineHeight: 1.5 }}>{modal.message}</div>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button style={{ flex: 1 }} onClick={onClose}>Cancel</button>
-          <button style={{ flex: 1, background: '#A32D2D', border: 'none', color: '#fff', borderRadius: 8, padding: '8px 14px', fontSize: 13, cursor: 'pointer' }} onClick={() => onConfirm()}>Delete</button>
+function rStep1(){
+  let h=`<div style="font-size:17px;font-weight:500;margin-bottom:4px">Choose today's template</div>
+  <div style="font-size:13px;color:var(--text2);margin-bottom:18px">Pick the schedule that best fits your day.</div>`;
+  if(!templates.length) h+=`<div class="empty">No templates yet. Go to Templates tab to create one.</div>`;
+  templates.forEach(t=>{
+    const sel=startSelTpl===t.id;
+    const first=t.entries[0]?.time||'',last=t.entries[t.entries.length-1]?.time||'';
+    h+=`<div class="tpl-option${sel?' selected':''}" onclick="selectTpl('${t.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:500;font-size:15px">${esc(t.name)}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:3px">${t.entries.length} entries${first?' · '+first+' – '+last:''}</div>
         </div>
+        ${sel?CIRCLE_CHECK:''}
       </div>
-    </div>
-  );
-
-  if (modal.type === 'track') return (
-    <div style={overlayStyle}>
-      <div style={boxStyle}>
-        <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 3 }}>Log: {modal.entry.desc}</div>
-        <div style={{ fontSize: 12, color: '#888', marginBottom: 14 }}>Saved to "{modal.entry.trackTable}"</div>
-        {modal.last && (
-          <div style={{ background: 'rgba(127,119,221,0.08)', border: '0.5px solid rgba(127,119,221,0.25)', borderRadius: 8, padding: '9px 12px', marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 500, color: '#534AB7', marginBottom: 4 }}>Last entry — {fmtDate(modal.last.date)}</div>
-            <div style={{ fontSize: 13, color: '#555', lineHeight: 1.5 }}>{modal.last.note || <em style={{ color: '#aaa' }}>No notes</em>}</div>
-          </div>
-        )}
-        <textarea value={note} onChange={e => setNote(e.target.value)} placeholder={`Notes for today's ${modal.entry.desc.toLowerCase()}...`} rows={4} style={{ marginBottom: 14, resize: 'vertical' }} />
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button onClick={onClose}>Cancel</button>
-          <button className="btn-primary" style={{ flex: 1, padding: '9px 14px' }} onClick={() => onConfirm(note)}>Save log</button>
-        </div>
-      </div>
-    </div>
-  );
-
-  return null;
+    </div>`;
+  });
+  h+=`<button class="btn-primary btn-full" onclick="goStep2()" ${!startSelTpl||!templates.length?'disabled':''}>Next: Set daily intentions →</button>`;
+  return h;
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+function rStep2(){
+  let warn='';
+  if(startWarned&&(!startGoal.trim()||!startFreeTime.trim())){
+    warn=`<div class="alert-warn"><strong>⚠ Reminder — don't skip these!</strong>
+      ${!startGoal.trim()?'<div>• Daily goal is empty</div>':''}
+      ${!startFreeTime.trim()?'<div>• Free-time activity is empty</div>':''}
+      <div style="margin-top:6px;font-size:12px;opacity:0.8">Tap "Start Day" again to proceed anyway.</div>
+    </div>`;
+  }
+  return `<div style="font-size:17px;font-weight:500;margin-bottom:4px">Set your intentions</div>
+  <div style="font-size:13px;color:var(--text2);margin-bottom:18px">These guide your day. You can leave them blank, but you'll be reminded.</div>
+  ${warn}
+  <div style="margin-bottom:14px">
+    <label class="label" for="inp-goal">Daily goal</label>
+    <input id="inp-goal" type="text" placeholder="e.g. Finish the project proposal..." value="${esc(startGoal)}"/>
+  </div>
+  <div style="margin-bottom:22px">
+    <label class="label" for="inp-free">Free-time activity</label>
+    <input id="inp-free" type="text" placeholder="e.g. Read for 30 minutes..." value="${esc(startFreeTime)}"/>
+  </div>
+  <div style="display:flex;gap:10px">
+    <button onclick="goStep1()" style="padding:10px 16px">← Back</button>
+    <button class="btn-primary btn-full" onclick="doStartDay()">Start Day</button>
+  </div>`;
+}
+
+function selectTpl(id){startSelTpl=id;render();}
+function goStep2(){startStep=2;render();}
+function goStep1(){startStep=1;render();}
+
+function doStartDay(){
+  const g=document.getElementById('inp-goal');
+  const f=document.getElementById('inp-free');
+  if(g) startGoal=g.value.trim();
+  if(f) startFreeTime=f.value.trim();
+  if(!startWarned&&(!startGoal||!startFreeTime)){startWarned=true;render();return;}
+  const tpl=templates.find(t=>t.id===startSelTpl);
+  if(!tpl)return;
+  dailyLog={date:todayStr(),templateId:tpl.id,templateName:tpl.name,goal:startGoal,freeTime:startFreeTime,checks:{},createdAt:Date.now()};
+  startStep=1;startGoal='';startFreeTime='';startWarned=false;
+  save(KEYS.log,dailyLog);render();
+}
+
+function endDay(){
+  if(!dailyLog)return;
+  if(!confirm('End today and save to history?'))return;
+  history=[dailyLog,...history].slice(0,90);
+  dailyLog=null;save(KEYS.log,null);save(KEYS.hist,history);render();
+}
+
+// ── TEMPLATES ──────────────────────────────────────────────────────────────
+function rTemplates(){
+  let h=`<div class="section-header">
+    <div style="font-size:17px;font-weight:500">Your templates</div>
+    <button class="btn-primary btn-sm" onclick="newTemplate()">+ New</button>
+  </div>`;
+  if(!templates.length) h+=`<div class="empty">No templates yet. Tap "+ New" to create one.</div>`;
+  templates.forEach(t=>{
+    const prev=t.entries.slice(0,5).map(e=>`<div style="display:flex;gap:10px;font-size:13px;color:var(--text2);align-items:center;padding:2px 0">
+      <span style="min-width:65px;color:var(--text3);font-size:12px">${esc(e.time)}</span>
+      <span style="flex:1">${esc(e.desc)}</span>
+      ${e.tracked?`<span class="pill">${esc(e.trackTable)}</span>`:''}
+    </div>`).join('');
+    const more=t.entries.length>5?`<div style="font-size:12px;color:var(--text3);margin-top:4px">+${t.entries.length-5} more entries</div>`:'';
+    h+=`<div class="card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div><div style="font-weight:500;font-size:15px">${esc(t.name)}</div><div style="font-size:12px;color:var(--text2);margin-top:2px">${t.entries.length} entries</div></div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="btn-sm" onclick="editTemplate('${t.id}')">Edit</button>
+          <button class="btn-sm btn-danger" onclick="deleteTemplate('${t.id}')">Delete</button>
+        </div>
+      </div>${prev}${more}
+    </div>`;
+  });
+  return h;
+}
+
+function newTemplate(){
+  const t={id:uid(),name:'New Template',entries:[]};
+  templates.push(t);save(KEYS.tpl,templates);
+  editorEntries=[];editingTplId=t.id;render();
+}
+
+function editTemplate(id){
+  const tpl=templates.find(t=>t.id===id);
+  editorEntries=tpl?tpl.entries.map(e=>({...e})):[];
+  editingTplId=id;render();
+}
+
+function deleteTemplate(id){
+  openConfirm('Delete this template? This cannot be undone.',()=>{
+    templates=templates.filter(t=>t.id!==id);save(KEYS.tpl,templates);render();
+  });
+}
+
+// ── EDITOR ─────────────────────────────────────────────────────────────────
+function rEditor(){
+  const tpl=templates.find(t=>t.id===editingTplId);
+  if(!tpl)return'';
+  let rows=editorEntries.map((e,i)=>`
+    <div class="entry-builder" id="eb-${e.id}">
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <div style="flex:0 0 95px">
+          <label class="label" style="margin-bottom:4px">Time</label>
+          <input type="text" placeholder="9:00 AM" value="${esc(e.time)}" data-id="${e.id}" data-field="time" style="padding:7px 10px"/>
+        </div>
+        <div style="flex:1">
+          <label class="label" style="margin-bottom:4px">Description</label>
+          <input type="text" placeholder="Activity..." value="${esc(e.desc)}" data-id="${e.id}" data-field="desc" style="padding:7px 10px"/>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer;flex-shrink:0">
+          <input type="checkbox" ${e.tracked?'checked':''} data-id="${e.id}" data-field="tracked"/>
+          Track this
+        </label>
+        ${e.tracked?`<input type="text" placeholder="Table name (e.g. Workouts)" value="${esc(e.trackTable)}" data-id="${e.id}" data-field="trackTable" style="flex:1;min-width:120px;padding:5px 10px;font-size:12px"/>` : ''}
+        <div style="margin-left:auto;display:flex;gap:5px">
+          <button class="btn-sm" onclick="moveEntry(${i},-1)" ${i===0?'disabled':''} style="padding:4px 9px">↑</button>
+          <button class="btn-sm" onclick="moveEntry(${i},1)" ${i===editorEntries.length-1?'disabled':''} style="padding:4px 9px">↓</button>
+          <button class="btn-sm btn-danger" onclick="removeEntry('${e.id}')" style="padding:4px 9px">✕</button>
+        </div>
+      </div>
+    </div>`).join('');
+  return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+    <button onclick="cancelEdit()">← Back</button>
+    <div style="font-size:17px;font-weight:500">Edit template</div>
+  </div>
+  <div style="margin-bottom:18px">
+    <label class="label" for="tpl-name-inp">Template name</label>
+    <input id="tpl-name-inp" type="text" placeholder="e.g. Weekday, Weekend, Rest Day..." value="${esc(tpl.name)}"/>
+  </div>
+  <div style="font-size:14px;font-weight:500;margin-bottom:10px">Schedule entries</div>
+  ${rows}
+  <button class="add-entry-btn" onclick="addEntry()">+ Add entry</button>
+  <button class="btn-primary btn-full" onclick="saveEditor()">Save template</button>`;
+}
+
+function flushEditorInputs(){
+  editorEntries.forEach(e=>{
+    const eb=document.getElementById('eb-'+e.id);
+    if(!eb)return;
+    eb.querySelectorAll('input,textarea').forEach(inp=>{
+      const f=inp.dataset.field;
+      if(!f)return;
+      e[f]=inp.type==='checkbox'?inp.checked:inp.value;
+    });
+  });
+  const ni=document.getElementById('tpl-name-inp');
+  return ni?ni.value:null;
+}
+
+function addEntry(){
+  flushEditorInputs();
+  editorEntries.push({id:uid(),time:'',desc:'',tracked:false,trackTable:''});render();
+}
+
+function removeEntry(id){
+  flushEditorInputs();
+  editorEntries=editorEntries.filter(e=>e.id!==id);render();
+}
+
+function moveEntry(idx,dir){
+  flushEditorInputs();
+  const t=idx+dir;
+  if(t<0||t>=editorEntries.length)return;
+  [editorEntries[idx],editorEntries[t]]=[editorEntries[t],editorEntries[idx]];render();
+}
+
+function cancelEdit(){editorEntries=[];editingTplId=null;render();}
+
+function saveEditor(){
+  const name=flushEditorInputs();
+  const tpl=templates.find(t=>t.id===editingTplId);
+  if(tpl){if(name)tpl.name=name;tpl.entries=editorEntries.map(e=>({...e}));}
+  editorEntries=[];editingTplId=null;save(KEYS.tpl,templates);render();
+}
+
+// ── LOGS ────────────────────────────────────────────────────────────────────
+function rLogs(){
+  const tables=Object.keys(tracked);
+  const allTabs=['history',...tables];
+  if(!allTabs.includes(activeLogTab))activeLogTab='history';
+  const tabsH=allTabs.map(t=>`<button class="log-tab${activeLogTab===t?' active':''}" onclick="switchLogTab('${t}')">${t==='history'?'Day history':t.replace(/_/g,' ')}</button>`).join('');
+  let content='';
+  if(activeLogTab==='history'){
+    if(!history.length){content=`<div class="empty">No history yet. Complete your first day!</div>`;}
+    else history.forEach((d,i)=>{
+      const tpl=templates.find(t=>t.id===d.templateId);
+      const ents=tpl?tpl.entries:[];
+      const done=ents.filter(e=>d.checks[e.id]).length;
+      const pct=ents.length?Math.round(done/ents.length*100):0;
+      const pctStyle=pct===100?'background:var(--success-bg);color:var(--success-text)':'background:var(--surface);color:var(--text2)';
+      content+=`<div class="hist-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+          <div style="font-weight:500;font-size:15px">${fmtDate(d.date)}</div>
+          <div class="pct-badge" style="${pctStyle}">${pct}%</div>
+        </div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:${d.goal||d.freeTime?'6px':'0'}">${esc(d.templateName)} · ${done}/${ents.length} items complete</div>
+        ${d.goal?`<div style="font-size:13px;color:var(--text2)">Goal: <span style="color:var(--text)">${esc(d.goal)}</span></div>`:''}
+        ${d.freeTime?`<div style="font-size:13px;color:var(--text2);margin-top:2px">Free time: <span style="color:var(--text)">${esc(d.freeTime)}</span></div>`:''}
+      </div>`;
+    });
+  } else {
+    const rows=tracked[activeLogTab]||[];
+    const label=activeLogTab.replace(/_/g,' ');
+    content=`<div style="font-size:13px;color:var(--text2);margin-bottom:12px;text-transform:capitalize">${label} — ${rows.length} entries</div>`;
+    if(!rows.length){content+=`<div class="empty">No entries yet.</div>`;}
+    else rows.forEach(e=>{
+      content+=`<div class="hist-card">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <div style="font-weight:500;font-size:14px">${fmtDate(e.date)}</div>
+          <div style="font-size:12px;color:var(--text3)">${esc(e.desc)}</div>
+        </div>
+        <div style="font-size:14px;color:var(--text2);line-height:1.6">${e.note?esc(e.note):'<em style="color:var(--text3)">No notes</em>'}</div>
+      </div>`;
+    });
+  }
+  return`<div class="log-tabs">${tabsH}</div>${content}`;
+}
+
+function switchLogTab(t){activeLogTab=t;render();}
+
+// ── TRACK MODAL ─────────────────────────────────────────────────────────────
+function openTrackModal(entryId){
+  const tpl=templates.find(t=>t.id===dailyLog?.templateId);
+  const entry=tpl?.entries.find(e=>e.id===entryId);
+  if(!entry)return;
+  const last=getLastTracked(entry.trackTable);
+  const lastH=last?`<div style="background:var(--purple-light);border:0.5px solid var(--purple-border);border-radius:8px;padding:9px 12px;margin-bottom:14px">
+    <div style="font-size:11px;font-weight:500;color:var(--purple);margin-bottom:4px">Last entry — ${fmtDate(last.date)}</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.5">${esc(last.note||'(no notes)')}</div>
+  </div>`:'';
+  document.getElementById('modal-box').innerHTML=`
+    <div style="font-size:15px;font-weight:500;margin-bottom:3px">Log: ${esc(entry.desc)}</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px">Saved to "${esc(entry.trackTable)}"</div>
+    ${lastH}
+    <textarea id="track-note" rows="4" placeholder="Notes for today's ${esc(entry.desc.toLowerCase())}..." style="margin-bottom:14px"></textarea>
+    <div style="display:flex;gap:10px">
+      <button onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" style="flex:1;padding:9px 14px" onclick="saveTrack('${entry.id}','${esc(entry.trackTable)}','${esc(entry.desc)}')">Save log</button>
+    </div>`;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function saveTrack(entryId,table,desc){
+  const note=document.getElementById('track-note')?.value||'';
+  const key=tableKey(table);
+  tracked[key]=[{id:uid(),date:todayStr(),desc:desc,note:note,ts:Date.now()},...(tracked[key]||[])].slice(0,200);
+  save(KEYS.tracked,tracked);closeModal();render();
+}
+
+function openConfirm(msg,cb){
+  confirmCb=cb;
+  document.getElementById('modal-box').innerHTML=`
+    <div style="font-size:15px;font-weight:500;margin-bottom:6px">Confirm</div>
+    <div style="font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.5">${esc(msg)}</div>
+    <div style="display:flex;gap:10px">
+      <button style="flex:1" onclick="closeModal()">Cancel</button>
+      <button style="flex:1;background:#A32D2D;border:none;color:#fff;border-radius:8px;padding:9px;font-size:13px;cursor:pointer;font-family:inherit" onclick="runConfirm()">Delete</button>
+    </div>`;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function runConfirm(){closeModal();if(confirmCb)confirmCb();confirmCb=null;}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+function closeModalOnBg(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
+
+render();
 </script>
 </body>
 </html>
