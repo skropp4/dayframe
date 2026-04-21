@@ -7,7 +7,7 @@
 <meta name="supported-color-schemes" content="light"/>
 <title>DayFrame</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72'><rect width='72' height='72' rx='16' fill='%23EDE4CC'/><line x1='2' y1='39' x2='70' y2='11' stroke='%231C2333' stroke-width='0.35' stroke-linecap='round'/><line x1='2' y1='17' x2='28' y2='28' stroke='%231C2333' stroke-width='0.35' stroke-linecap='round'/><line x1='17' y1='2' x2='28' y2='28' stroke='%231C2333' stroke-width='0.35' stroke-linecap='round'/><line x1='11' y1='70' x2='39' y2='2' stroke='%231C2333' stroke-width='0.35' stroke-linecap='round'/><line x1='2' y1='2' x2='28' y2='28' stroke='%231C2333' stroke-width='0.35' stroke-linecap='round'/><line x1='2' y1='54' x2='54' y2='2' stroke='%231C2333' stroke-width='0.35' stroke-linecap='round'/><line x1='2' y1='28' x2='28' y2='28' stroke='%231C2333' stroke-width='0.35' stroke-linecap='round'/><line x1='28' y1='2' x2='28' y2='28' stroke='%231C2333' stroke-width='0.35' stroke-linecap='round'/><line x1='16' y1='16' x2='28' y2='28' stroke='%231C2333' stroke-width='3.2' stroke-linecap='round'/><line x1='28' y1='28' x2='54' y2='2' stroke='%231C2333' stroke-width='3.2' stroke-linecap='round'/><path d='M 45 28 A 17 17 0 1 0 28 45' stroke='%231C2333' stroke-width='0.35' fill='none' stroke-linecap='round'/><rect x='28' y='28' width='38' height='36' rx='3' fill='%23EDE4CC' stroke='%231C2333' stroke-width='0.35'/><line x1='28' y1='37' x2='66' y2='37' stroke='%231C2333' stroke-width='0.35' stroke-linecap='round'/><text x='47' y='57' text-anchor='middle' font-family='Didot,Bodoni MT,Playfair Display,serif' font-weight='700' font-size='19' fill='%231C2333'>DF</text></svg>"/>
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72'><rect width='72' height='72' rx='16' fill='%23EDE4CC'/><line x1='2' y1='39' x2='70' y2='11' stroke='%231C2333' stroke-width='0.35' stroke-linecap='round'/><line x1='2' y1='17' x2='28' y2='28' stroke='%231C2333' stroke-width='0.35' stroke-linecap='round'/><line x1='17' y1='2' x2='28' y2='28' stroke='%231C2333' stroke-width='0.35' stroke-linecap='round'/><line x1='11' y1='70' x2='39' y2='2' stroke='%231C2333' stroke-width='0.35' stroke-linecap='round'/><line x1='2' y1='2' x2='28' y2='28' stroke='%231C2333' stroke-width='0.35' stroke-linecap='round'/><line x1='2' y1='54' x2='54' y2='2' stroke='%231C2333' stroke-width='0.35' stroke-linecap='round'/><line x1='2' y1='28' x2='28' y2='28' stroke='%231C2333' stroke-width='0.35' stroke-linecap='round'/><line x1='28' y1='2' x2='28' y2='28' stroke='%231C2333' stroke-width='0.35' stroke-linecap='round'/><line x1='16' y1='16' x2='28' y2='28' stroke='%231C2333' stroke-width='3.2' stroke-linecap='round'/><line x1='28' y1='28' x2='54' y2='2' stroke='%231C2333' stroke-width='3.2' stroke-linecap='round'/><path d='M 45 28 A 17 17 0 1 0 28 45' stroke='%231C2333' stroke-width='0.35' fill='none' stroke-linecap='round'/><rect x='28' y='28' width='38' height='36' rx='3' fill='%23EDE4CC' stroke='%231C2333' stroke-width='0.35'/><line x1='28' y1='37' x2='66' y2='37' stroke='%231C2333' stroke-width='0.35' stroke-linecap='round'/><text x='47' y='57' text-anchor='middle' font-family='Didot,Bodoni MT,Playfair Display,serif' font-weight='700' font-size='19' fill='%231C2333'>DF</text></svg>"/>
+<link rel="apple-touch-icon" href="./dayframe-icon.png"/>
 <style>
 :root {
   color-scheme: light;
@@ -318,68 +318,20 @@ button:disabled{opacity:0.3;cursor:not-allowed}
   display:flex;gap:10px;margin-bottom:14px;
 }
 
-/* ── Time picker ─────────────────────────────────────────── */
-.time-picker{
+/* ── Time picker (select dropdowns) ──────────────────────── */
+.time-select-wrap{
   display:flex;align-items:center;gap:4px;
-  background:#EDE4CC;border:0.5px solid var(--ink-mid);
-  border-radius:var(--radius-sm);padding:0;overflow:hidden;
-  height:36px;
 }
-.time-col{
-  display:flex;flex-direction:column;overflow:hidden;
-  position:relative;flex:1;
+.time-select{
+  flex:1;padding:7px 4px;font-size:15px;font-family:inherit;
+  font-weight:500;color:var(--ink);background:#EDE4CC;
+  border:0.5px solid var(--ink-mid);border-radius:var(--radius-sm);
+  text-align:center;-webkit-appearance:none;appearance:none;
+  cursor:pointer;
 }
-.time-col-inner{
-  display:flex;flex-direction:column;
-  transition:transform 0.15s ease;
-}
-.time-slot{
-  height:36px;display:flex;align-items:center;justify-content:center;
-  font-size:14px;font-family:inherit;color:var(--ink);
-  cursor:pointer;user-select:none;flex-shrink:0;
-  padding:0 6px;
-}
-.time-slot.selected{font-weight:700;background:rgba(28,35,51,0.08)}
-.time-sep{
-  font-size:16px;font-weight:700;color:var(--ink);
-  padding:0 1px;flex-shrink:0;align-self:center;
-}
-.time-picker-wrap{
-  display:flex;flex-direction:column;gap:4px;
-}
-.time-picker-label{font-size:10px;color:var(--ink-soft);font-weight:700;text-transform:uppercase;letter-spacing:0.1em}
-.time-drum{
-  display:flex;align-items:stretch;
-  background:#EDE4CC;border:0.5px solid var(--ink-mid);
-  border-radius:var(--radius-sm);overflow:hidden;height:36px;
-  width:100%;
-}
-.time-drum-col{
-  flex:1;overflow:hidden;position:relative;cursor:ns-resize;
-}
-.time-drum-col::before,.time-drum-col::after{
-  content:'';position:absolute;left:0;right:0;height:10px;z-index:2;pointer-events:none;
-}
-.time-drum-col::before{top:0;background:linear-gradient(to bottom,#EDE4CC,transparent)}
-.time-drum-col::after{bottom:0;background:linear-gradient(to top,#EDE4CC,transparent)}
-.time-drum-inner{
-  display:flex;flex-direction:column;
-  will-change:transform;
-}
-.time-drum-item{
-  height:36px;display:flex;align-items:center;justify-content:center;
-  font-size:15px;font-family:inherit;color:var(--ink);
-  flex-shrink:0;transition:font-weight 0.1s,opacity 0.1s;
-  opacity:0.45;
-}
-.time-drum-item.active{font-weight:700;opacity:1;}
-.time-drum-sep{
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;font-weight:700;color:var(--ink);
-  padding:0 2px;flex-shrink:0;
-}
-.time-drum-ampm{
-  flex:0 0 44px;
+.time-select:focus{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink-dim);}
+.time-sep-colon{
+  font-size:16px;font-weight:700;color:var(--ink);flex-shrink:0;
 }
 </style>
 </head>
@@ -883,83 +835,26 @@ function rTimePicker(entryId, timeStr){
   const {h,m,ampm}=parseTime(timeStr);
   const hours=[1,2,3,4,5,6,7,8,9,10,11,12];
   const mins=[0,5,10,15,20,25,30,35,40,45,50,55];
-  const ampms=['AM','PM'];
 
-  const hOpts=hours.map(v=>`<div class="time-drum-item${v===h?' active':''}" data-val="${v}" onclick="setTimePart('${entryId}','h',${v})">${v}</div>`).join('');
-  const mOpts=mins.map(v=>`<div class="time-drum-item${v===m?' active':''}" data-val="${v}" onclick="setTimePart('${entryId}','m',${v})">${String(v).padStart(2,'0')}</div>`).join('');
-  const aOpts=ampms.map(v=>`<div class="time-drum-item${v===ampm?' active':''}" data-val="${v}" onclick="setTimePart('${entryId}','ap','${v}')">${v}</div>`).join('');
+  const hOpts=hours.map(v=>`<option value="${v}"${v===h?' selected':''}>${v}</option>`).join('');
+  const mOpts=mins.map(v=>`<option value="${v}"${v===m?' selected':''}>${String(v).padStart(2,'0')}</option>`).join('');
+  const aOpts=['AM','PM'].map(v=>`<option value="${v}"${v===ampm?' selected':''}>${v}</option>`).join('');
 
-  return `<div class="time-drum" id="tp-${entryId}">
-    <div class="time-drum-col" id="tp-h-${entryId}" onwheel="wheelTimePart(event,'${entryId}','h')">
-      <div class="time-drum-inner">${hOpts}</div>
-    </div>
-    <div class="time-drum-sep">:</div>
-    <div class="time-drum-col" id="tp-m-${entryId}" onwheel="wheelTimePart(event,'${entryId}','m')">
-      <div class="time-drum-inner">${mOpts}</div>
-    </div>
-    <div class="time-drum-sep" style="font-size:11px;padding:0 3px"> </div>
-    <div class="time-drum-col time-drum-ampm" id="tp-ap-${entryId}" onwheel="wheelTimePart(event,'${entryId}','ap')">
-      <div class="time-drum-inner">${aOpts}</div>
-    </div>
+  return `<div class="time-select-wrap">
+    <select class="time-select" id="tp-h-${entryId}" onchange="onTimeChange('${entryId}')">${hOpts}</select>
+    <span class="time-sep-colon">:</span>
+    <select class="time-select" id="tp-m-${entryId}" onchange="onTimeChange('${entryId}')">${mOpts}</select>
+    <select class="time-select" id="tp-ap-${entryId}" onchange="onTimeChange('${entryId}')">${aOpts}</select>
   </div>`;
 }
 
-// Store picker state per entry
-const pickerState={};
-
-function getPickerState(entryId){
-  if(!pickerState[entryId]){
-    const e=editorEntries.find(e=>e.id===entryId);
-    pickerState[entryId]=parseTime(e?e.time:'');
-  }
-  return pickerState[entryId];
-}
-
-function setTimePart(entryId, part, val){
-  const state=getPickerState(entryId);
-  if(part==='h') state.h=parseInt(val);
-  else if(part==='m') state.m=parseInt(val);
-  else if(part==='ap') state.ampm=val;
-
-  // Update entry time string
+function onTimeChange(entryId){
+  const hEl =document.getElementById('tp-h-'+entryId);
+  const mEl =document.getElementById('tp-m-'+entryId);
+  const apEl=document.getElementById('tp-ap-'+entryId);
+  if(!hEl||!mEl||!apEl) return;
   const e=editorEntries.find(e=>e.id===entryId);
-  if(e) e.time=formatTime(state.h,state.m,state.ampm);
-
-  // Update active classes in DOM without full re-render
-  const col=document.getElementById(`tp-${part==='ap'?'ap':'h'==='h'&&part==='h'?'h':'m'}-${entryId}`);
-  // Simpler: update the correct column
-  const colId=`tp-${part}-${entryId}`;
-  const colEl=document.getElementById(colId);
-  if(colEl){
-    colEl.querySelectorAll('.time-drum-item').forEach(item=>{
-      const itemVal=item.dataset.val;
-      const isActive = part==='ap' ? itemVal===val : parseInt(itemVal)===parseInt(val);
-      item.classList.toggle('active', isActive);
-    });
-    // Scroll active item into center view
-    const activeEl=colEl.querySelector('.time-drum-item.active');
-    if(activeEl) activeEl.scrollIntoView({block:'center',behavior:'smooth'});
-  }
-}
-
-function wheelTimePart(e, entryId, part){
-  e.preventDefault();
-  const state=getPickerState(entryId);
-  const dir=e.deltaY>0?1:-1;
-  const hours=[1,2,3,4,5,6,7,8,9,10,11,12];
-  const mins=[0,5,10,15,20,25,30,35,40,45,50,55];
-
-  if(part==='h'){
-    const idx=hours.indexOf(state.h);
-    const next=hours[(idx+dir+hours.length)%hours.length];
-    setTimePart(entryId,'h',next);
-  } else if(part==='m'){
-    const idx=mins.indexOf(state.m);
-    const next=mins[(idx+dir+mins.length)%mins.length];
-    setTimePart(entryId,'m',next);
-  } else if(part==='ap'){
-    setTimePart(entryId,'ap',state.ampm==='AM'?'PM':'AM');
-  }
+  if(e) e.time=formatTime(parseInt(hEl.value),parseInt(mEl.value),apEl.value);
 }
 
 // ── Custom checkbox toggle helpers ────────────────────────────────────────────
@@ -1011,12 +906,11 @@ function flushEditorInputs(){
   editorEntries.forEach(e=>{
     const eb=document.getElementById('eb-'+e.id);
     if(!eb)return;
-    // desc field
     const descEl=eb.querySelector('input[data-field="desc"]');
-    const tblEl=eb.querySelector('input[data-field="trackTable"]');
+    const tblEl =eb.querySelector('input[data-field="trackTable"]');
     if(descEl) e.desc=descEl.value;
     if(tblEl)  e.trackTable=tblEl.value;
-    // time is managed live by pickerState — already written to e.time in setTimePart
+    // time is managed live by onTimeChange — already written to e.time
   });
 }
 
@@ -1038,14 +932,13 @@ function moveEntry(idx,dir){
   [editorEntries[idx],editorEntries[t]]=[editorEntries[t],editorEntries[idx]];render();
 }
 
-function cancelEdit(){editorEntries=[];editingTplId=null;Object.keys(pickerState).forEach(k=>delete pickerState[k]);render();}
+function cancelEdit(){editorEntries=[];editingTplId=null;render();}
 
 function saveEditor(){
   flushEditorInputs();
   const tpl=templates.find(t=>t.id===editingTplId);
   if(tpl) tpl.entries=editorEntries.map(e=>({...e}));
   editorEntries=[];editingTplId=null;
-  Object.keys(pickerState).forEach(k=>delete pickerState[k]);
   save(KEYS.tpl,templates);render();
 }
 
